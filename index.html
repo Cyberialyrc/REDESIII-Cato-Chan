@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CATO CHAN</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Bienvenido a CATO CHAN</h1>
+        <img src="logo.jpeg" alt="Logo de CATO CHAN" class="logo">
+        <div class="buttons">
+            <button id="btn-ingresar">Iniciar sesión</button>
+            <button id="btn-registrar">Registrarse</button>
+        </div>
+    </header>
+
+    <main>
+        <form id="form-login" class="form hidden">
+            <input type="text" id="usuario" placeholder="DNI o Correo" required>
+            <input type="password" id="password" placeholder="Contraseña" required>
+            <button type="submit">Ingresar</button>
+            <div id="mensaje-login" class="mensaje"></div>
+        </form>
+
+        <form id="form-register" class="form hidden">
+            <input type="text" name="nombre" placeholder="Nombre" required>
+            <input type="text" name="apellido" placeholder="Apellido" required>
+            <input type="email" name="correo" placeholder="Correo" required>
+            <input type="text" name="dni" placeholder="DNI" required>
+            <input type="password" name="password" placeholder="Contraseña" required>
+            <button type="submit">Registrar</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 - CATO CHAN. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CATO CHAN</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Bienvenido al Dashboard</h1>
+        <button id="btn-cato">Modo CATO (Con Nombre)</button>
+        <button id="btn-chan">Modo CHAN (Anónimo)</button>
+    </header>
+
+    <main>
+        <textarea id="post-content" placeholder="Escribe tu post aquí..."></textarea>
+        <button id="btn-postear">Postear</button>
+        <div id="mensaje-post"></div>
+    </main>
+
+    <script>
+        let modoAnonimo = false;
+
+        document.getElementById('btn-cato').addEventListener('click', () => {
+            modoAnonimo = false;
+            alert('Modo CATO activado. Los posts mostrarán tu nombre.');
+        });
+
+        document.getElementById('btn-chan').addEventListener('click', () => {
+            modoAnonimo = true;
+            alert('Modo CHAN activado. Los posts serán anónimos.');
+        });
+
+        document.getElementById('btn-postear').addEventListener('click', async () => {
+            const contenido = document.getElementById('post-content').value;
+            const usuario = modoAnonimo ? 'Anónimo' : 'Usuario';
+
+            try {
+                const response = await fetch('post.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, contenido })
+                });
+
+                const data = await response.json();
+                document.getElementById('mensaje-post').textContent = data.message;
+            } catch (error) {
+                console.error('Error en el posteo:', error);
+            }
+        });
+    </script>
+</body>
+</html>
