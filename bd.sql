@@ -1,9 +1,9 @@
 -- Base de Datos Cato_Chan
-DROP DATABASE IF EXISTS cato_Chan;
+DROP DATABASE IF EXISTS cato_chan;
 	-- Creamos base de datos 'empresa'
-CREATE DATABASE cato_Chan;
+CREATE DATABASE cato_chan;
 	-- Designamos 'empresa' como base de datos actual, a la que se hará referencia en el resto del código
-USE cato_Chan;
+USE cato_chan;
 
 -- Tabla de usuarios
 CREATE TABLE usuarios (

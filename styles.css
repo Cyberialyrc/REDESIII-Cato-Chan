@@ -11,12 +11,14 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    transition: background-color 0.5s;
 }
 
 header {
     text-align: center;
     padding: 20px;
     background-color: #218838;
+    transition: background-color 0.5s;
 }
 
 .logo {
@@ -91,4 +93,35 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+}
+
+#img-modo {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 60px; /* Ajusta el tamaño para ser un icono */
+    height: auto;
+    transition: opacity 0.5s ease; /* Transición suave al cambiar */
+}
+
+.modo-oscuro {
+    background-color: #1c3d23; /* Verde oscuro para modo CHAN */
+    color: white;
+}
+
+.modo-oscuro header {
+    background-color: #164d2f; /* Fondo oscuro para el header en modo CHAN */
+}
+
+.modo-oscuro .form {
+    background-color: #235d3b; /* Fondo oscuro para el formulario en modo CHAN */
+}
+
+.modo-oscuro button {
+    background-color: #336f50;
+    color: white;
+}
+
+.modo-oscuro button:hover {
+    background-color: #3c7d58;
 }
