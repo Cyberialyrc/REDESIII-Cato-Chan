@@ -1,41 +1,100 @@
 <?php
-$conexion = new mysqli("localhost", "root", "admin", "cato_chan");
+include 'conexion.php'; // Incluye la conexión correctamente
 
-if ($conexion->connect_error) {
-    die("Error de conexión: " . $conexion->connect_error);
-}
+// Inicializa variables para almacenar mensajes
+$message = '';
+$messageType = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = $_POST['nombre'];
-    $apellido = $_POST['apellido'];
-    $correo = $_POST['correo'];
-    $dni = $_POST['dni'];
+    $nombre = trim($_POST['nombre']);
+    $apellido = trim($_POST['apellido']);
+    $correo = trim($_POST['correo']);
+    $dni = trim($_POST['dni']);
+    $password = $_POST['password'];
 
-    // Desencriptamos la contraseña recibida usando la clave privada
-    $clavePrivada = openssl_pkey_get_private(file_get_contents(__DIR__ . '/keys/private_key.pem'));
-    if (!$clavePrivada) {
-        die('No se pudo cargar la clave privada');
-    }
-
-    openssl_private_decrypt(
-        base64_decode($_POST['password']),
-        $passwordDescifrada,
-        $clavePrivada
-    );
-
-    // Hasheamos la contraseña antes de guardarla
-    $passwordHasheada = password_hash($passwordDescifrada, PASSWORD_BCRYPT);
-
-    // Insertamos los datos en la base de datos
-    $query = $conexion->prepare("INSERT INTO usuarios (nombre, apellido, correo, dni, password) VALUES (?, ?, ?, ?, ?)");
-    $query->bind_param("sssss", $nombre, $apellido, $correo, $dni, $passwordHasheada);
-
-    if ($query->execute()) {
-        echo json_encode(['message' => 'Usuario registrado exitosamente']);
+    // Validación de correo
+    if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+        $message = 'Correo no válido';
+        $messageType = 'danger'; // Tipo de mensaje: error
     } else {
-        echo json_encode(['error' => 'Error al registrar usuario']);
+        // Verificar si el correo ya existe
+        $checkQuery = $conexion->prepare("SELECT COUNT(*) FROM usuarios WHERE correo = ?");
+        $checkQuery->bind_param("s", $correo);
+        $checkQuery->execute();
+        $checkQuery->bind_result($count);
+        $checkQuery->fetch();
+        $checkQuery->close();
+
+        if ($count > 0) {
+            $message = 'El correo ya está registrado. Por favor, utiliza otro.';
+            $messageType = 'danger';
+        } else {
+            // Hash de la contraseña
+            $passwordHasheada = password_hash($password, PASSWORD_BCRYPT);
+
+            // Preparación de la consulta para insertar el nuevo usuario
+            $query = $conexion->prepare(
+                "INSERT INTO usuarios (nombre, apellido, correo, dni, password) VALUES (?, ?, ?, ?, ?)"
+            );
+
+            if ($query) {
+                $query->bind_param("sssss", $nombre, $apellido, $correo, $dni, $passwordHasheada);
+                if ($query->execute()) {
+                    $message = 'Usuario registrado exitosamente';
+                    $messageType = 'success'; // Tipo de mensaje: éxito
+                } else {
+                    $message = 'Error al registrar usuario';
+                    $messageType = 'danger';
+                }
+                $query->close();
+            } else {
+                $message = 'Error en la preparación de la consulta';
+                $messageType = 'danger';
+            }
+        }
     }
 
-    $conexion->close(); // Cerramos la conexión
+    $conexion->close();
 }
 ?>
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CATO CHAN</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Bienvenido a CATO CHAN</h1>
+        <img src="logo.jpeg" alt="Logo de CATO CHAN" class="logo">
+        <div class="buttons">
+            <button id="btn-ingresar">Iniciar sesión</button>
+            <button id="btn-registrar">Registrarse</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <?php if ($message): ?>
+                <div class="alert <?= $messageType; ?>" role="alert">
+                    <?= htmlspecialchars($message); ?>
+                </div>
+            <?php endif; ?>
+
+            <a href="index.html" class="btn btn-primary">Volver a inicio</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 - CATO CHAN. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

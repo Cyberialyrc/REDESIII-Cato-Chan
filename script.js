@@ -1,5 +1,22 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Función para mostrar el mensaje de alerta
+    // Clave para cifrado AES (ejemplo, reemplazar con una más segura en producción)
+    const ENCRYPTION_KEY = "12345678901234567890123456789012"; // 32 caracteres para AES-256
+
+    // Función para cifrar con AES (manteniendo la lógica original)
+    async function cifrarAES(data) {
+        const iv = crypto.getRandomValues(new Uint8Array(16)); // Generar IV aleatorio
+        const encoder = new TextEncoder();
+        const key = await crypto.subtle.importKey('raw', encoder.encode(ENCRYPTION_KEY), 'AES-CBC', false, ['encrypt']);
+        const dataBytes = encoder.encode(data);
+
+        const encrypted = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: iv }, key, dataBytes);
+        const encryptedArray = new Uint8Array(encrypted);
+        // Convertir el IV y el texto cifrado a un formato base64
+        const encryptedData = [...iv, ...encryptedArray];
+        return btoa(String.fromCharCode(...encryptedData));
+    }
+
+    // Función para mostrar un mensaje
     function mostrarMensaje(mensaje) {
         alert(mensaje); // Muestra el mensaje como una alerta
     }
@@ -7,27 +24,31 @@ document.addEventListener("DOMContentLoaded", function () {
     // Función de inicio de sesión
     async function login(event) {
         event.preventDefault();
-
-        const usuario = document.getElementById('usuario').value;
-        const password = document.getElementById('password').value;
-
+    
+        const usuario = document.getElementById('usuario').value.trim();
+        const password = document.getElementById('password').value; // Usa la contraseña en texto plano
+    
         if (!usuario || !password) {
             mostrarMensaje('Por favor, complete todos los campos.');
             return;
         }
-
-        const passwordCifrada = await encryptWithPublicKey(password); // Cifrado
-
+    
         try {
             const response = await fetch('login.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usuario, password: passwordCifrada })
+                body: JSON.stringify({ usuario, password }) // Enviar la contraseña sin cifrar
             });
-
+    
+            // Verifica si la respuesta es exitosa
+            if (!response.ok) {
+                const errorResponse = await response.json();
+                throw new Error(errorResponse.error || 'Error en la respuesta del servidor');
+            }
+    
             const data = await response.json();
             const mensajeLogin = document.getElementById('mensaje-login');
-
+    
             if (data.error) {
                 mensajeLogin.textContent = data.error;
                 mensajeLogin.style.color = 'red';
@@ -40,62 +61,13 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         } catch (error) {
             console.error('Error en la solicitud:', error);
-            mostrarMensaje('Hubo un problema con la solicitud.');
+            mostrarMensaje('Hubo un problema con la solicitud. Verifica la consola para más detalles.');
         }
     }
 
-    // Asignar evento de submit al formulario de login
-    document.getElementById('form-login').addEventListener('submit', login); // Asignamos evento
+    // Asignar eventos de submit e interacciones a los botones
+    document.getElementById('form-login').addEventListener('submit', login); // Asegúrate de que este evento se esté llamando correctamente
 
-    // Función para cargar la clave pública desde el archivo public_key.pem
-    async function loadPublicKey() {
-        const response = await fetch('/public_key.pem'); // Carga la clave pública
-        const publicKeyPem = await response.text(); // Convierte a texto
-
-        // Convertir la clave pública en formato PEM a ArrayBuffer
-        const publicKeyData = pemABytes(publicKeyPem);
-
-        // Importar la clave pública usando la Web Crypto API
-        return window.crypto.subtle.importKey(
-            'spki',
-            publicKeyData,
-            { name: 'RSA-OAEP', hash: 'SHA-256' },
-            true,
-            ['encrypt']
-        );
-    }
-
-    // Función para cifrar la contraseña usando la clave pública
-    async function encryptWithPublicKey(data) {
-        const publicKey = await loadPublicKey(); // Carga la clave pública
-        const encoder = new TextEncoder(); // Convierte el texto a bytes
-
-        // Cifrar los datos (contraseña)
-        const encrypted = await window.crypto.subtle.encrypt(
-            { name: 'RSA-OAEP' },
-            publicKey,
-            encoder.encode(data)
-        );
-
-        // Convertir el ArrayBuffer cifrado a Base64 para enviarlo al servidor
-        return btoa(String.fromCharCode(...new Uint8Array(encrypted)));
-    }
-
-    // Función auxiliar para convertir una clave PEM a ArrayBuffer
-    function pemABytes(pem) {
-        const b64 = pem
-            .replace('-----BEGIN PUBLIC KEY-----', '')
-            .replace('-----END PUBLIC KEY-----', '')
-            .replace(/\s/g, '');
-        const raw = atob(b64);
-        const bytes = new Uint8Array(raw.length);
-        for (let i = 0; i < raw.length; i++) {
-            bytes[i] = raw.charCodeAt(i);
-        }
-        return bytes.buffer;
-    }
-
-    // Asignar eventos a los botones de login/registro
     const btnIngresar = document.getElementById('btn-ingresar');
     const btnRegistrar = document.getElementById('btn-registrar');
     const formLogin = document.getElementById('form-login');

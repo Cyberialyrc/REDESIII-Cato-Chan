@@ -26,13 +26,14 @@
             <div id="mensaje-login" class="mensaje"></div>
         </form>
 
-        <form id="form-register" class="form hidden">
+        <form id="form-register" method="POST" action="register.php" class="form hidden">
             <input type="text" name="nombre" placeholder="Nombre" required>
             <input type="text" name="apellido" placeholder="Apellido" required>
             <input type="email" name="correo" placeholder="Correo" required>
             <input type="text" name="dni" placeholder="DNI" required>
             <input type="password" name="password" placeholder="Contraseña" required>
             <button type="submit">Registrar</button>
+            <div id="mensaje-register" class="mensaje"></div>
         </form>
     </main>
 
