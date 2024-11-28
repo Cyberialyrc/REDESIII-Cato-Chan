@@ -4,7 +4,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - CATO CHAN</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --verde-claro: #a8e6cf;
+            --verde-mediano: #56ab56;
+            --verde-oscuro: #2e8b57;
+            --gris-claro: #f1f1f1;
+            --gris-oscurito: #e0e0e0;
+            --blanco: #ffffff;
+            --negro: #333333;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--gris-claro);
+            color: var(--negro);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--verde-oscuro);
+            color: var(--blanco);
+            text-align: center;
+            padding: 20px 0;
+            width: 100%;
+
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header div {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: var(--verde-claro);
+            color: var(--negro);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin: 10px 0;
+            display: block;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: var(--verde-oscuro);
+            transform: scale(1.05);
+        }
+
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #btn-cato, #btn-chan {
+            background-color: var(--verde-mediano);
+        }
+
+        #btn-cato:hover, #btn-chan:hover {
+            background-color: var(--verde-oscuro);
+        }
+
+        main {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #post-content {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            font-size: 1rem;
+            border: 2px solid var(--gris-oscurito);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            resize: none;
+            transition: border-color 0.3s ease;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #post-content:focus {
+            border-color: var(--verde-mediano);
+        }
+
+        #mensaje-post {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: var(--verde-oscuro);
+            font-weight: bold;
+        }
+
+        #img-modo {
+            margin-top: 20px;
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .modo-oscuro {
+            background-color: #333333;
+            color: var(--blanco);
+        }
+
+        .modo-oscuro button {
+            background-color: var(--verde-oscuro);
+            color: var(--blanco);
+        }
+
+        .modo-oscuro #post-content {
+            background-color: #444444;
+            border-color: #666666;
+            color: var(--blanco);
+        }
+
+        .modo-oscuro #post-content:focus {
+            border-color: var(--verde-claro);
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -27,15 +169,15 @@
 
         document.getElementById('btn-cato').addEventListener('click', () => {
             modoAnonimo = false;
-            document.body.classList.remove('modo-oscuro'); // Elimina el modo oscuro
-            document.getElementById('img-modo').src = 'libro.png'; // Imagen para modo CATO
+            document.body.classList.remove('modo-oscuro');
+            document.getElementById('img-modo').src = 'libro.png';
             alert('Modo CATO activado. Los posts mostrarán tu nombre.');
         });
 
         document.getElementById('btn-chan').addEventListener('click', () => {
             modoAnonimo = true;
-            document.body.classList.add('modo-oscuro'); // Activa el modo oscuro
-            document.getElementById('img-modo').src = 'anonimo.png'; // Imagen para modo CHAN
+            document.body.classList.add('modo-oscuro');
+            document.getElementById('img-modo').src = 'anonimo.png';
             alert('Modo CHAN activado. Los posts serán anónimos.');
         });
 
